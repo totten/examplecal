@@ -6,8 +6,40 @@ use CRM_Examplecal_ExtensionUtil as E;
 // phpcs:enable
 
 function examplecal_civicrm_esmImportMap(\Civi\Esm\ImportMap $importMap): void {
-  $importMap->addPrefix('@fullcalendar/core', E::LONG_NAME, 'node_modules/@fullcalendar/core');
-  $importMap->addPrefix('@fullcalendar/daygrid', E::LONG_NAME, 'node_modules/@fullcalendar/daygrid');
+  $npmPackages = [
+    '@fullcalendar/core',
+    '@fullcalendar/daygrid',
+    'preact',
+  ];
+  foreach ($npmPackages as $package) {
+    $packageJson = json_decode(file_get_contents(E::path("node_modules/{$package}/package.json")), 1);
+    foreach ($packageJson['exports'] as $item => $variants) {
+      // All the `$item`s and `$variant`s are expressed relative to `./`. We trim the `./` with substr().
+
+      // No need to tell browser about CommonJS files -- browser wants ESM.
+      if (str_ends_with($item, '.cjs')) {
+        continue;
+      }
+
+      $logicalPath = $package . substr($item, 1);
+
+      $physicalPath = NULL;
+      if (is_string($variants)) {
+        $physicalPath = "node_modules/{$package}" . substr($variants, 1);
+      }
+      elseif (isset($variants['browser'])) {
+        $physicalPath = "node_modules/{$package}" . substr($variants['browser'], 1);
+      }
+      elseif (isset($variants['import'])) {
+        $physicalPath = "node_modules/{$package}" . substr($variants['import'], 1);
+      }
+
+      if ($physicalPath) {
+        $importMap->addPrefix($logicalPath, E::LONG_NAME, $physicalPath);
+
+      }
+    }
+  }
 }
 
 /**
