@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/examplecal</path>
+    <page_callback>CRM_Examplecal_Page_ExampleCal</page_callback>
+    <title>ExampleCal</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
