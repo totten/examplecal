@@ -5,6 +5,11 @@ require_once 'examplecal.civix.php';
 use CRM_Examplecal_ExtensionUtil as E;
 // phpcs:enable
 
+function examplecal_civicrm_esmImportMap(\Civi\Esm\ImportMap $importMap): void {
+  $importMap->addPrefix('@fullcalendar/core', E::LONG_NAME, 'node_modules/@fullcalendar/core');
+  $importMap->addPrefix('@fullcalendar/daygrid', E::LONG_NAME, 'node_modules/@fullcalendar/daygrid');
+}
+
 /**
  * Implements hook_civicrm_config().
  *
